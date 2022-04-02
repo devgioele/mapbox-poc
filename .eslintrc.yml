@@ -40,8 +40,6 @@ rules:
     - off
   no-restricted-syntax:
     - off
-  # react-hooks/exhaustive-deps:
-  #   - error
   react/react-in-jsx-scope:
     - off
   consistent-return:
@@ -69,4 +67,6 @@ rules:
   no-restricted-exports:
     - off
   react/jsx-props-no-spreading:
+    - off
+  no-console:
     - off
