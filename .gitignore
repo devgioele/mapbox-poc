@@ -1,0 +1,19 @@
+# Dependencies
+/node_modules
+
+# Generated build
+/build
+
+# Local environment variables
+# We do check the rest of the .env files into source control.
+# See https://create-react-app.dev/docs/adding-custom-environment-variables/#adding-development-environment-variables-in-env
+.env*.local
+
+# ESLint
+.eslintcache
+
+# Misc
+.DS_Store
+
+# Logs
+*.log
