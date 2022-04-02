@@ -16,6 +16,7 @@ parserOptions:
   project: './tsconfig.json'
 plugins:
   - '@typescript-eslint'
+  - react-hooks
 # Settings shared across all rules
 settings:
   import/resolver:
@@ -40,6 +41,8 @@ rules:
     - off
   no-restricted-syntax:
     - off
+  react-hooks/exhaustive-deps:
+    - warn
   react/react-in-jsx-scope:
     - off
   consistent-return:
@@ -55,8 +58,7 @@ rules:
     - off
   jsx-a11y/anchor-has-content:
     - off
-  # Does not make sense in our case,
-  # because we do not use the prop-types library
+  # No prop-types library
   react/require-default-props:
     - off
   no-param-reassign:

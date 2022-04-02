@@ -1,12 +1,4 @@
-import { useEffect, useState } from 'react';
-
 export default function App() {
-  const [color, setColor] = useState('blue');
-
-  useEffect(() => {
-    console.log(color);
-  }, []);
-
   return (
     <div
       style={{
