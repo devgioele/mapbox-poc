@@ -1,0 +1,9 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.bracketPairColorization.enabled": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "non-relative"
+}

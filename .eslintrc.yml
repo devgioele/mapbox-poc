@@ -1,0 +1,72 @@
+env:
+  browser: true
+  es2021: true
+  node: true
+  jest: true
+extends:
+  - airbnb
+  - airbnb-typescript
+  - prettier
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+    arrowFunctions: true
+  ecmaVersion: 12
+  project: './tsconfig.json'
+plugins:
+  - '@typescript-eslint'
+# Settings shared across all rules
+settings:
+  import/resolver:
+    node:
+      extensions:
+        - .js
+        - .jsx
+        - .ts
+        - .tsx
+      moduleDirectory:
+        - node_modules
+        - src
+# Rule adjustments (off|warn|error)
+rules:
+  no-undef:
+    - off
+  react/prop-types:
+    - off
+  no-underscore-dangle:
+    - off
+  '@typescript-eslint/no-unused-vars':
+    - off
+  no-restricted-syntax:
+    - off
+  react-hooks/exhaustive-deps:
+    - off
+  react/react-in-jsx-scope:
+    - off
+  consistent-return:
+    - error
+  react/jsx-key:
+    - warn
+  curly:
+    - warn
+    - all
+  import/no-cycle:
+    - warn
+  jsx-a11y/control-has-associated-label:
+    - off
+  jsx-a11y/anchor-has-content:
+    - off
+  # Does not make sense in our case,
+  # because we do not use the prop-types library
+  react/require-default-props:
+    - off
+  no-param-reassign:
+    - error
+    # Whether the properties of parameters cannot be changed
+    - props: false
+  # Allow `export { default } from`
+  no-restricted-exports:
+    - off
+  react/jsx-props-no-spreading:
+    - off
