@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
 
-function App() {
+export default function App() {
   const [color, setColor] = useState('blue');
 
   useEffect(() => {
@@ -10,23 +8,36 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
+    <div
+      style={{
+        display: 'flex',
+        flexFlow: 'column nowrap',
+        justifyContent: 'center',
+        color: '#ffffff',
+        textAlign: 'center',
+        height: '100%',
+      }}
+    >
+      <header
+        style={{
+          flex: '1',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <p style={{ fontSize: 'xx-large' }}>Love and create!🚀</p>
+      </header>
+      <main style={{ flex: '8 0 auto', padding: '2%', paddingTop: '0px' }}>
         <a
-          className="App-link"
+          style={{ fontSize: 'x-large' }}
           href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
         >
           Learn React
         </a>
-      </header>
+      </main>
     </div>
   );
 }
-
-export default App;
