@@ -35,6 +35,36 @@ export default function WebMap({ accessToken }: WebMapProps) {
         center: [initialLng, initialLat],
         zoom: initialZoom,
       });
+      map.current.on('load', () => {
+        if (map.current) {
+          map.current.addSource('plantings-combined', {
+            type: 'vector',
+            url: 'mapbox://devgioele.3r62yymc',
+          });
+          map.current.addLayer({
+            id: 'plantings-combined-fill',
+            type: 'fill',
+            source: 'plantings-combined',
+            'source-layer': 'polygons_combined-9iacsm',
+            layout: {},
+            paint: {
+              'fill-color': '#0080ff',
+              'fill-opacity': 0.5,
+            },
+          });
+          map.current.addLayer({
+            id: 'plantings-combined-outline',
+            type: 'line',
+            source: 'plantings-combined',
+            'source-layer': 'polygons_combined-9iacsm',
+            layout: {},
+            paint: {
+              'line-color': '#000000',
+              'line-width': 1,
+            },
+          });
+        }
+      });
     }
   }, [accessToken]);
 
