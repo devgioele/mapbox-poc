@@ -2,6 +2,13 @@
 
 The goal of this POC is to demonstrate the feasibility and performance of displaying thousands of polygon features on a map using [Mapbox](https://mapbox.com/) with [React](https://reactjs.org/).
 
+## Usage
+
+To specify the MapBox access token, create a `.env.local` file at the root with the following content:
+```
+REACT_APP_MAP_BOX=<token>
+```
+
 I compare Mapbox with ArcGIS during the development, to conclude what GIS service is best suited for modern applications that deal with big data and need automated workflows.
 Points that are going to make me decide between the two:
 * **API**s for programmatic upload/edit of feature and raster layers (aka. vector and raster tilesets).

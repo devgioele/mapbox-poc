@@ -54,10 +54,12 @@ rules:
     - all
   import/no-cycle:
     - warn
-  jsx-a11y/control-has-associated-label:
-    - off
-  jsx-a11y/anchor-has-content:
-    - off
+  jsx-a11y/label-has-associated-control:
+    - error
+    - required:
+        some:
+          - nesting
+          - id
   # No prop-types library
   react/require-default-props:
     - off

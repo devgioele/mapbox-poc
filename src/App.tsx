@@ -1,6 +1,19 @@
+import { useState } from 'react';
+import TextField from './TextField';
 import WebMap from './WebMap';
 
 export default function App() {
+  const [mapBoxToken, setMapBoxToken] = useState<string>('');
+  const [appliedMapBoxToken, setAppliedMapBoxToken] = useState(mapBoxToken);
+
+  const handleAccessToken = (accessToken: string) => {
+    setMapBoxToken(accessToken);
+  };
+
+  const handleSubmitAccessToken = () => {
+    setAppliedMapBoxToken(mapBoxToken);
+  };
+
   return (
     <div
       style={{
@@ -20,10 +33,10 @@ export default function App() {
           alignItems: 'center',
         }}
       >
-        <p style={{ fontSize: 'xx-large' }}>Love and create!🚀</p>
+        <p style={{ fontSize: 'xx-large' }}>React + MapBox = 🚀</p>
       </header>
       <main style={{ flex: '8 0 auto', padding: '2%', paddingTop: '0px' }}>
-        <WebMap />
+        <WebMap accessToken={process.env.REACT_APP_MAP_BOX} />
       </main>
     </div>
   );
