@@ -1,6 +1,10 @@
 import mapboxgl from 'mapbox-gl';
 import { useEffect, useRef, useState } from 'react';
 
+const initialLng = 11.3677;
+const initialLat = 46.6131;
+const initialZoom = 9;
+
 type WebMapProps = {
   accessToken: string | undefined;
 };
@@ -8,9 +12,9 @@ type WebMapProps = {
 export default function WebMap({ accessToken }: WebMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map>();
-  const [lng, setLng] = useState(-70.9);
-  const [lat, setLat] = useState(42.35);
-  const [zoom, setZoom] = useState(9);
+  const [lng, setLng] = useState(initialLng);
+  const [lat, setLat] = useState(initialLat);
+  const [zoom, setZoom] = useState(initialZoom);
 
   // Set access token
   useEffect(() => {
@@ -28,11 +32,11 @@ export default function WebMap({ accessToken }: WebMapProps) {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v11',
-        center: [lng, lat],
-        zoom,
+        center: [initialLng, initialLat],
+        zoom: initialZoom,
       });
     }
-  });
+  }, [accessToken]);
 
   return (
     <div style={{ height: '100%' }}>
