@@ -1,3 +1,5 @@
+import WebMap from './WebMap';
+
 export default function App() {
   return (
     <div
@@ -21,14 +23,7 @@ export default function App() {
         <p style={{ fontSize: 'xx-large' }}>Love and create!🚀</p>
       </header>
       <main style={{ flex: '8 0 auto', padding: '2%', paddingTop: '0px' }}>
-        <a
-          style={{ fontSize: 'x-large' }}
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <WebMap />
       </main>
     </div>
   );
