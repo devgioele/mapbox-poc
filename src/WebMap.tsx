@@ -18,10 +18,16 @@ const plantations: VectorTileset = {
   layers: ['plantations-7whx5j'],
 };
 
-const meanTemp: RasterTileset = {
-  id: 'meanTemp',
+const terrain: RasterTileset = {
+  id: 'terrain',
   url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
   tilesetId: 'mapbox.mapbox-terrain-dem-v1',
+};
+
+const meanTemp: RasterTileset = {
+  id: 'meanTemp',
+  url: 'mapbox://kultivas.5lkpbnjt',
+  tilesetId: 'kultivas.5lkpbnjt',
 };
 
 const initialLng = 11.3677;
@@ -87,16 +93,30 @@ export default function WebMap({ accessToken }: WebMapProps) {
               'line-width': 1,
             },
           });
-          // Add raster tileset
-          map.current.addSource(meanTemp.id, {
+          // Add terrain raster tileset
+          map.current.addSource(terrain.id, {
             type: 'raster-dem',
+            url: terrain.url,
+          });
+          const terrainLayerId = `${terrain.id}-default`;
+          map.current.addLayer({
+            id: terrainLayerId,
+            type: 'hillshade',
+            source: terrain.id,
+          });
+          // Add mean temperature raster tileset
+          map.current.addSource(meanTemp.id, {
+            type: 'raster',
             url: meanTemp.url,
           });
+          const meanTempLayerId = `${meanTemp.id}-default`;
           map.current.addLayer({
-            id: `${meanTemp.id}-default`,
-            type: 'hillshade',
+            id: meanTempLayerId,
+            type: 'raster',
             source: meanTemp.id,
           });
+          // Set paint properties
+          map.current.setPaintProperty(meanTempLayerId, 'raster-opacity', 0.5);
         }
       });
     }
