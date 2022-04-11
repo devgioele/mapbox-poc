@@ -1,6 +1,29 @@
 import mapboxgl from 'mapbox-gl';
 import { useEffect, useRef, useState } from 'react';
 
+type RasterTileset = {
+  id: string;
+  url: string;
+  tilesetId: string;
+};
+
+type VectorTileset = RasterTileset & {
+  layers: string[];
+};
+
+const plantations: VectorTileset = {
+  id: 'plantations',
+  url: 'mapbox://kultivas.ads1l5jx',
+  tilesetId: 'kultivas.ads1l5jx',
+  layers: ['plantations-7whx5j'],
+};
+
+const meanTemp: RasterTileset = {
+  id: 'meanTemp',
+  url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+  tilesetId: 'mapbox.mapbox-terrain-dem-v1',
+};
+
 const initialLng = 11.3677;
 const initialLat = 46.6131;
 const initialZoom = 9;
@@ -37,15 +60,16 @@ export default function WebMap({ accessToken }: WebMapProps) {
       });
       map.current.on('load', () => {
         if (map.current) {
-          map.current.addSource('plantings-combined', {
+          // Add vector tileset
+          map.current.addSource(plantations.id, {
             type: 'vector',
-            url: 'mapbox://devgioele.3r62yymc',
+            url: plantations.url,
           });
           map.current.addLayer({
-            id: 'plantings-combined-fill',
+            id: `${plantations.id}-fill`,
             type: 'fill',
-            source: 'plantings-combined',
-            'source-layer': 'polygons_combined-9iacsm',
+            source: plantations.id,
+            'source-layer': plantations.layers[0],
             layout: {},
             paint: {
               'fill-color': '#0080ff',
@@ -53,15 +77,25 @@ export default function WebMap({ accessToken }: WebMapProps) {
             },
           });
           map.current.addLayer({
-            id: 'plantings-combined-outline',
+            id: `${plantations.id}-outline`,
             type: 'line',
-            source: 'plantings-combined',
-            'source-layer': 'polygons_combined-9iacsm',
+            source: plantations.id,
+            'source-layer': plantations.layers[0],
             layout: {},
             paint: {
               'line-color': '#000000',
               'line-width': 1,
             },
+          });
+          // Add raster tileset
+          map.current.addSource(meanTemp.id, {
+            type: 'raster-dem',
+            url: meanTemp.url,
+          });
+          map.current.addLayer({
+            id: `${meanTemp.id}-default`,
+            type: 'hillshade',
+            source: meanTemp.id,
           });
         }
       });
