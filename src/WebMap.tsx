@@ -1,4 +1,9 @@
-import mapboxgl, { Expression, StyleFunction } from 'mapbox-gl';
+import mapboxgl, {
+  Expression,
+  NavigationControl,
+  StyleFunction,
+} from 'mapbox-gl';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { useEffect, useRef, useState } from 'react';
 
 type RasterTileset = {
@@ -9,11 +14,6 @@ type RasterTileset = {
 
 type VectorTileset = RasterTileset & {
   layers: string[];
-};
-
-const styles = {
-  it: 'mapbox://styles/kultivas/cl25xsqvu00fm14piw9fcc7by',
-  de: 'mapbox://styles/kultivas/cl25ya7qe002o15tcejx3nznb',
 };
 
 const plantations: VectorTileset = {
@@ -87,6 +87,7 @@ export default function WebMap({ accessToken }: WebMapProps) {
   const [lng, setLng] = useState(initialLng);
   const [lat, setLat] = useState(initialLat);
   const [zoom, setZoom] = useState(initialZoom);
+  const [loading, setLoading] = useState(true);
 
   // Set access token
   useEffect(() => {
@@ -100,30 +101,53 @@ export default function WebMap({ accessToken }: WebMapProps) {
     // If not initialized yet and
     // access token and map container exists
     if (!map.current && accessToken && mapContainer.current) {
-      console.log('Initializing map');
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        // Style of 'basemap'
-        style: styles.de,
+        style: 'mapbox://styles/kultivas/cl25ya7qe002o15tcejx3nznb',
         center: [initialLng, initialLat],
         zoom: initialZoom,
       });
+      // Add zoom and rotation controls to the map.
+      map.current.addControl(new NavigationControl(), 'top-left');
+      const language = new MapboxLanguage();
+      map.current.addControl(language);
+
       map.current.on('load', () => {
         if (map.current) {
+          // Set language to German
+          map.current.setStyle(
+            language.setLanguage(map.current.getStyle(), 'de')
+          );
           // Add terrain raster tileset
           map.current.addSource(terrain.id, {
             type: 'raster-dem',
             url: terrain.url,
+            tileSize: 512,
+            maxzoom: 14,
           });
-          const terrainLayerId = `${terrain.id}-default`;
+          map.current.setTerrain({ source: terrain.id, exaggeration: 1.5 });
+          // Add a sky layer that is showed when the map is highly pitched
           map.current.addLayer({
-            id: terrainLayerId,
-            type: 'hillshade',
-            source: terrain.id,
+            id: 'sky',
+            type: 'sky',
             paint: {
-              'hillshade-exaggeration': 0.2,
+              'sky-type': 'atmosphere',
+              'sky-atmosphere-sun': [0.0, 0.0],
+              'sky-atmosphere-sun-intensity': 15,
             },
           });
+
+          // Use hillshade or 3D raster-dem, but not both
+          // const terrainLayerId = `${terrain.id}-default`;
+          // map.current.addLayer({
+          //   id: terrainLayerId,
+          //   type: 'hillshade',
+          //   source: terrain.id,
+          //   paint: {
+          //     'hillshade-exaggeration': 0.2,
+          //   },
+          // });
+
           // Add elevation raster tileset
           map.current.addSource(elevation.id, {
             type: 'raster',
@@ -165,18 +189,35 @@ export default function WebMap({ accessToken }: WebMapProps) {
               'line-width': 1,
             },
           });
+          setLoading(false);
         }
       });
     }
   }, [accessToken]);
 
   return (
-    <div style={{ height: '100%' }}>
+    <div style={{ height: '100%', position: 'relative' }}>
       <div
         style={{ height: '100%' }}
         ref={mapContainer}
         className="map-container"
       />
+      {loading && (
+        <div
+          id="loader"
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            height: '100%',
+            width: '100%',
+            background: 'white',
+            zIndex: 100,
+          }}
+        >
+          <span style={{ color: 'black' }}>Loading...</span>
+        </div>
+      )}
     </div>
   );
 }

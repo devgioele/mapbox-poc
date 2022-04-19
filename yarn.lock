@@ -1383,6 +1383,11 @@
   resolved "https://registry.yarnpkg.com/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.2.tgz#ce56e539f83552b58d10d672ea4d6fc9adc7b234"
   integrity sha1-zlblOfg1UrWNENZy6k1vya3HsjQ=
 
+"@mapbox/mapbox-gl-language@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-language/-/mapbox-gl-language-1.0.0.tgz#41d111c7da731679098db602bb55f056f4530242"
+  integrity sha512-G1m/BK7M9+u8tM23qg1gA9hyhjFplAfttLb1li6+hlBfhjRApzSqbYlX4pvtN4SftO7ALHNX7uPhpzpkl7c+5Q==
+
 "@mapbox/mapbox-gl-supported@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-supported/-/mapbox-gl-supported-2.0.1.tgz#c15367178d8bfe4765e6b47b542fe821ce259c7b"
@@ -1857,10 +1862,10 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
-"@types/mapbox-gl@^2.6.3":
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-2.6.3.tgz#09e4992bb540fe5e024eebc5fbc315317cb13ffe"
-  integrity sha512-oF5eQmczkoPQfxfRSwpF9GcrWi3YleptJ67uiCQKps+7aKxwIbww0EHHqIrxvOg49l07+AZBtJU2FPKZm1jKAg==
+"@types/mapbox-gl@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-2.7.0.tgz#1b33e9116fa185168c772448a4ce531ddb086bca"
+  integrity sha512-kNT3iHMZILCb5Kg07TaUnZglCucO9KbVy1/0uPkFs3G9fWyFz22PGlHJtd25+A6KZ2Sjl+ByXq5850jyeZWQBA==
   dependencies:
     "@types/geojson" "*"
 
@@ -5880,10 +5885,10 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-mapbox-gl@^2.7.1:
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-2.7.1.tgz#40ed8ed7be6210f521766158cedbce44dff23aea"
-  integrity sha512-7nR+GPWn7Dy60i5mqH/V94Rp+GbSETFEDaDD49RgWYMGywoSQsTGzMDm+sJsegXv3zwSiTuyQtBOj6BwzIyG4w==
+mapbox-gl@^2.8.1:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-2.8.1.tgz#431cd772b50883da53a4e210c0b23297631831f6"
+  integrity sha512-AmttsfvuWonyuOu7HcwM6Ok738A0yVYx5h3tjCAFrAsivY8SiCvF/stK2CXhSw2/6/BbZ3qe/S03J7GvisNskA==
   dependencies:
     "@mapbox/geojson-rewind" "^0.5.1"
     "@mapbox/geojson-types" "^1.0.2"
