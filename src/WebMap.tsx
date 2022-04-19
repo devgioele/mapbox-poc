@@ -3,7 +3,6 @@ import mapboxgl, {
   NavigationControl,
   StyleFunction,
 } from 'mapbox-gl';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { useEffect, useRef, useState } from 'react';
 
 type RasterTileset = {
@@ -14,6 +13,15 @@ type RasterTileset = {
 
 type VectorTileset = RasterTileset & {
   layers: string[];
+};
+
+type Expressions = {
+  [index: string]: string | Expression | StyleFunction;
+};
+
+const basemapStyles = {
+  it: 'mapbox://styles/kultivas/cl269uv2c000n14oc56rgxaae',
+  de: 'mapbox://styles/kultivas/cl25ya7qe002o15tcejx3nznb',
 };
 
 const plantations: VectorTileset = {
@@ -33,10 +41,6 @@ const elevation: RasterTileset = {
   id: 'elevation',
   url: 'mapbox://kultivas.55eo0pq7',
   tilesetId: 'kultivas.55eo0pq7',
-};
-
-type Expressions = {
-  [index: string]: string | Expression | StyleFunction;
 };
 
 // Documentation of MapBox expressions:
@@ -101,24 +105,19 @@ export default function WebMap({ accessToken }: WebMapProps) {
     // If not initialized yet and
     // access token and map container exists
     if (!map.current && accessToken && mapContainer.current) {
+      console.log('Initializing map');
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/kultivas/cl25ya7qe002o15tcejx3nznb',
+        style: basemapStyles.de,
         center: [initialLng, initialLat],
         zoom: initialZoom,
       });
       // Add zoom and rotation controls to the map.
       map.current.addControl(new NavigationControl(), 'top-left');
-      const language = new MapboxLanguage();
-      map.current.addControl(language);
 
       map.current.on('load', () => {
         if (map.current) {
-          // Set language to German
-          map.current.setStyle(
-            language.setLanguage(map.current.getStyle(), 'de')
-          );
-          // Add terrain raster tileset
+          // Use hillshade or 3D terrain, but not both
           map.current.addSource(terrain.id, {
             type: 'raster-dem',
             url: terrain.url,
@@ -126,18 +125,8 @@ export default function WebMap({ accessToken }: WebMapProps) {
             maxzoom: 14,
           });
           map.current.setTerrain({ source: terrain.id, exaggeration: 1.5 });
-          // Add a sky layer that is showed when the map is highly pitched
-          map.current.addLayer({
-            id: 'sky',
-            type: 'sky',
-            paint: {
-              'sky-type': 'atmosphere',
-              'sky-atmosphere-sun': [0.0, 0.0],
-              'sky-atmosphere-sun-intensity': 15,
-            },
-          });
 
-          // Use hillshade or 3D raster-dem, but not both
+          // Hillshade disabled, because using 3D terrain
           // const terrainLayerId = `${terrain.id}-default`;
           // map.current.addLayer({
           //   id: terrainLayerId,
@@ -189,7 +178,9 @@ export default function WebMap({ accessToken }: WebMapProps) {
               'line-width': 1,
             },
           });
+
           setLoading(false);
+          console.log('Map loaded');
         }
       });
     }
@@ -213,9 +204,12 @@ export default function WebMap({ accessToken }: WebMapProps) {
             width: '100%',
             background: 'white',
             zIndex: 100,
+            display: 'grid',
           }}
         >
-          <span style={{ color: 'black' }}>Loading...</span>
+          <span style={{ color: 'black', margin: 'auto', fontSize: '20px' }}>
+            Loading...
+          </span>
         </div>
       )}
     </div>
