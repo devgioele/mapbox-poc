@@ -25,8 +25,14 @@ type VectorTileset = RasterTileset & {
   layers: string[];
 };
 
-type Expressions = {
-  [index: string]: string | Expression | StyleFunction;
+type FillExpressions = {
+  color: string | Expression | StyleFunction;
+  opacity: number | Expression | StyleFunction;
+};
+
+type OutlineExpressions = {
+  color: string | Expression | StyleFunction;
+  width: number | Expression | StyleFunction;
 };
 
 const basemapStyles = {
@@ -57,8 +63,8 @@ const elevation: RasterTileset = {
 
 // Documentation of MapBox expressions:
 // https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions
-const colors: Expressions = {
-  appleVarietyFill: [
+const appleVarietyFill: FillExpressions = {
+  color: [
     'match',
     ['get', 'VarietyNam'],
     ['GOLDEN', 'GOLDEN DELICIOUS B', 'GOLDEN PARSI DA ROSA', 'GOLDEN REINDERS'],
@@ -78,14 +84,32 @@ const colors: Expressions = {
     // Fallback
     '#c5c6d0',
   ],
-  elevation: [
-    'rgb',
-    // red is higher when feature.properties.temperature is higher
-    ['get', 'temperature'],
-    // green is always zero
-    0,
-    // blue is higher when feature.properties.temperature is lower
-    ['-', 100, ['get', 'temperature']],
+  opacity: [
+    'case',
+    // If feature-state `hover` exists and is true
+    ['boolean', ['feature-state', 'hover'], false],
+    1,
+    // Fallback
+    0.5,
+  ],
+};
+
+const appleVarietyOutline: OutlineExpressions = {
+  color: [
+    'case',
+    // If feature-state `hover` exists and is true
+    ['boolean', ['feature-state', 'hover'], false],
+    '#00aaff',
+    // Fallback
+    '#000000',
+  ],
+  width: [
+    'case',
+    // If feature-state `hover` exists and is true
+    ['boolean', ['feature-state', 'hover'], false],
+    3,
+    // Fallback
+    1,
   ],
 };
 
@@ -104,6 +128,7 @@ export default function WebMap({ accessToken }: WebMapProps) {
   const [lat, setLat] = useState(initialLat);
   const [zoom, setZoom] = useState(initialZoom);
   const [loading, setLoading] = useState(true);
+  const hoveredFeatureId = useRef<string | number | undefined>();
 
   // Set access token
   useEffect(() => {
@@ -184,8 +209,8 @@ export default function WebMap({ accessToken }: WebMapProps) {
             'source-layer': plantations.layers[0],
             layout: {},
             paint: {
-              'fill-color': colors.appleVarietyFill,
-              'fill-opacity': 0.5,
+              'fill-color': appleVarietyFill.color,
+              'fill-opacity': appleVarietyFill.opacity,
             },
           });
           map.current.addLayer({
@@ -195,8 +220,8 @@ export default function WebMap({ accessToken }: WebMapProps) {
             'source-layer': plantations.layers[0],
             layout: {},
             paint: {
-              'line-color': '#000000',
-              'line-width': 1,
+              'line-color': appleVarietyOutline.color,
+              'line-width': appleVarietyOutline.width,
             },
           });
 
@@ -212,25 +237,31 @@ export default function WebMap({ accessToken }: WebMapProps) {
             .replace(/[A-Za-z()]/g, '')
             .trimStart()
             .split(' ');
-          console.log('numberStrs =', numberStrs);
           const coordinates = numberStrs.map((numberStr) =>
             parseFloat(numberStr)
           );
-          console.log('coordinates =', coordinates);
           return coordinates as [long: number, lat: number];
         }
         return undefined;
       };
 
       map.current.on('click', plantationsFillLayerId, (e) => {
-        const feature = e?.features?.[0];
-        console.log('feature =', feature);
-        if (feature) {
-          const pos = centroidOf(feature);
-          if (map.current) {
+        if (map.current) {
+          const feature = e?.features?.[0];
+          console.log('feature =', feature);
+          if (feature) {
+            const pos = centroidOf(feature);
+            // Fly to feature and offset the vanishing point upwards
             map.current.flyTo({
               center: pos,
               zoom: 17,
+              padding: { top: 0, bottom: 500, left: 0, right: 0 },
+            });
+          } else {
+            console.log('removing offset of vanishing point');
+            // Remove offset of vanishing point
+            map.current.easeTo({
+              padding: 0,
             });
           }
         }
@@ -247,6 +278,45 @@ export default function WebMap({ accessToken }: WebMapProps) {
       map.current.on('mouseleave', plantationsFillLayerId, () => {
         if (map.current) {
           map.current.getCanvas().style.cursor = '';
+          // Set hover state to false for previous feature, if any
+          if (hoveredFeatureId.current) {
+            map.current.setFeatureState(
+              {
+                source: plantations.id,
+                sourceLayer: plantations.layers[0],
+                id: hoveredFeatureId.current,
+              },
+              { hover: false }
+            );
+          }
+          hoveredFeatureId.current = undefined;
+        }
+      });
+
+      map.current.on('mousemove', plantationsFillLayerId, (e) => {
+        const feature = e?.features?.[0];
+        if (map.current && feature) {
+          // Set hover state to false for previous feature
+          if (hoveredFeatureId.current) {
+            map.current.setFeatureState(
+              {
+                source: plantations.id,
+                sourceLayer: plantations.layers[0],
+                id: hoveredFeatureId.current,
+              },
+              { hover: false }
+            );
+          }
+          // Set hover state to true for new feature
+          hoveredFeatureId.current = feature.id;
+          map.current.setFeatureState(
+            {
+              source: plantations.id,
+              sourceLayer: plantations.layers[0],
+              id: hoveredFeatureId.current,
+            },
+            { hover: true }
+          );
         }
       });
     }
