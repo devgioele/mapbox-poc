@@ -1,8 +1,18 @@
+import {
+  BBox,
+  Feature,
+  Geometry,
+  MultiPolygon,
+  Polygon,
+  Position,
+} from 'geojson';
 import mapboxgl, {
   Expression,
+  LngLatLike,
   NavigationControl,
   StyleFunction,
 } from 'mapbox-gl';
+import LegendControl from 'mapboxgl-legend';
 import { useEffect, useRef, useState } from 'react';
 
 type RasterTileset = {
@@ -31,6 +41,8 @@ const plantations: VectorTileset = {
   layers: ['plantations-7whx5j'],
 };
 
+const plantationsFillLayerId = `${plantations.id}-fill`;
+
 const terrain: RasterTileset = {
   id: 'terrain',
   url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -39,8 +51,8 @@ const terrain: RasterTileset = {
 
 const elevation: RasterTileset = {
   id: 'elevation',
-  url: 'mapbox://kultivas.55eo0pq7',
-  tilesetId: 'kultivas.55eo0pq7',
+  url: 'mapbox://kultivas.8fihsy5a',
+  tilesetId: 'kultivas.8fihsy5a',
 };
 
 // Documentation of MapBox expressions:
@@ -114,6 +126,13 @@ export default function WebMap({ accessToken }: WebMapProps) {
       });
       // Add zoom and rotation controls to the map.
       map.current.addControl(new NavigationControl(), 'top-left');
+      // Add legend
+      // Customize changing CSS variables defined here:
+      // https://github.com/markusand/mapboxgl-legend/blob/master/src/_variables.scss
+      map.current.addControl(
+        new LegendControl({ layers: [plantationsFillLayerId] }),
+        'bottom-left'
+      );
 
       map.current.on('load', () => {
         if (map.current) {
@@ -125,6 +144,9 @@ export default function WebMap({ accessToken }: WebMapProps) {
             maxzoom: 14,
           });
           map.current.setTerrain({ source: terrain.id, exaggeration: 1.5 });
+          // Anchor light source to the rotation of the map
+          // TODO: Warning appears nonetheless!
+          map.current.setLight({ anchor: 'map' });
 
           // Hillshade disabled, because using 3D terrain
           // const terrainLayerId = `${terrain.id}-default`;
@@ -142,9 +164,8 @@ export default function WebMap({ accessToken }: WebMapProps) {
             type: 'raster',
             url: elevation.url,
           });
-          const elevationLayerId = `${elevation.id}-default`;
           map.current.addLayer({
-            id: elevationLayerId,
+            id: `${elevation.id}-default`,
             type: 'raster',
             source: elevation.id,
             paint: {
@@ -157,7 +178,7 @@ export default function WebMap({ accessToken }: WebMapProps) {
             url: plantations.url,
           });
           map.current.addLayer({
-            id: `${plantations.id}-fill`,
+            id: plantationsFillLayerId,
             type: 'fill',
             source: plantations.id,
             'source-layer': plantations.layers[0],
@@ -183,6 +204,51 @@ export default function WebMap({ accessToken }: WebMapProps) {
           console.log('Map loaded');
         }
       });
+
+      const centroidOf = (feature: Feature): LngLatLike | undefined => {
+        const centroidStr: string = feature.properties?.Centroid;
+        if (centroidStr) {
+          const numberStrs = centroidStr
+            .replace(/[A-Za-z()]/g, '')
+            .trimStart()
+            .split(' ');
+          console.log('numberStrs =', numberStrs);
+          const coordinates = numberStrs.map((numberStr) =>
+            parseFloat(numberStr)
+          );
+          console.log('coordinates =', coordinates);
+          return coordinates as [long: number, lat: number];
+        }
+        return undefined;
+      };
+
+      map.current.on('click', plantationsFillLayerId, (e) => {
+        const feature = e?.features?.[0];
+        console.log('feature =', feature);
+        if (feature) {
+          const pos = centroidOf(feature);
+          if (map.current) {
+            map.current.flyTo({
+              center: pos,
+              zoom: 17,
+            });
+          }
+        }
+      });
+
+      // Change the cursor to a pointer when it enters a polygon
+      map.current.on('mouseenter', plantationsFillLayerId, () => {
+        if (map.current) {
+          map.current.getCanvas().style.cursor = 'pointer';
+        }
+      });
+
+      // Change the cursor back when it leaves a polygon
+      map.current.on('mouseleave', plantationsFillLayerId, () => {
+        if (map.current) {
+          map.current.getCanvas().style.cursor = '';
+        }
+      });
     }
   }, [accessToken]);
 
@@ -193,6 +259,7 @@ export default function WebMap({ accessToken }: WebMapProps) {
         ref={mapContainer}
         className="map-container"
       />
+      <div className="map-overlay" id="legend" />
       {loading && (
         <div
           id="loader"
