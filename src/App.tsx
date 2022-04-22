@@ -15,13 +15,12 @@ export default function App() {
 
   return (
     <div
+      className="bg-slate-900 h-full text-white"
       style={{
         display: 'flex',
         flexFlow: 'column nowrap',
         justifyContent: 'center',
-        color: '#ffffff',
         textAlign: 'center',
-        height: '100%',
       }}
     >
       <header
@@ -35,7 +34,7 @@ export default function App() {
         <p style={{ fontSize: 'xx-large' }}>React + MapBox = 🚀</p>
       </header>
       <main style={{ flex: '8 0 auto', padding: '2%', paddingTop: '0px' }}>
-        <WebMap accessToken={process.env.REACT_APP_MAP_BOX} />
+        <WebMap accessToken={import.meta.env.REACT_APP_MAP_BOX} />
       </main>
     </div>
   );
