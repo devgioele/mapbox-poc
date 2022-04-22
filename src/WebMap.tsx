@@ -133,6 +133,7 @@ export default function WebMap({ accessToken }: WebMapProps) {
   // Set access token
   useEffect(() => {
     if (accessToken) {
+      console.log('setting access token:', accessToken);
       mapboxgl.accessToken = accessToken;
     }
   }, [accessToken]);
