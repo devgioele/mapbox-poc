@@ -6,7 +6,7 @@ The goal of this POC is to demonstrate the feasibility and performance of displa
 
 To specify the MapBox access token, create a `.env.local` file at the root with the following content:
 ```
-REACT_APP_MAP_BOX=<token>
+VITE_MAP_BOX=<token>
 ```
 
 I compare Mapbox with ArcGIS during the development, to conclude what GIS service is best suited for modern applications that deal with big data and need automated workflows.
